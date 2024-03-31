@@ -1,0 +1,78 @@
+2024-04-01 01:21:49 gT1GBWqaTSCvLHfNLqpZtg
+2024-04-01 01:21:53 Created topic topic0.
+2024-04-01 01:21:54 Adding ACLs for resource `ResourcePattern(resourceType=TOPIC, name=topic0, patternType=LITERAL)`:
+2024-04-01 01:21:54  (principal=User:user_writer, host=*, operation=WRITE, permissionType=ALLOW)
+2024-04-01 01:21:54
+2024-04-01 01:21:54 Current ACLs for resource `ResourcePattern(resourceType=TOPIC, name=topic0, patternType=LITERAL)`:
+2024-04-01 01:21:54  (principal=User:user_writer, host=*, operation=WRITE, permissionType=ALLOW)
+2024-04-01 01:21:54
+2024-04-01 01:21:55 Adding ACLs for resource `ResourcePattern(resourceType=TOPIC, name=topic0, patternType=LITERAL)`:
+2024-04-01 01:21:55  (principal=User:user_reader, host=*, operation=READ, permissionType=ALLOW)
+2024-04-01 01:21:55
+2024-04-01 01:21:55 Adding ACLs for resource `ResourcePattern(resourceType=GROUP, name=*, patternType=LITERAL)`:
+2024-04-01 01:21:55  (principal=User:user_reader, host=*, operation=READ, permissionType=ALLOW)
+2024-04-01 01:21:55
+2024-04-01 01:21:55 Current ACLs for resource `ResourcePattern(resourceType=TOPIC, name=topic0, patternType=LITERAL)`:
+2024-04-01 01:21:55  (principal=User:user_reader, host=*, operation=READ, permissionType=ALLOW)
+2024-04-01 01:21:55 (principal=User:user_writer, host=*, operation=WRITE, permissionType=ALLOW)
+2024-04-01 01:21:55
+2024-04-01 01:21:55 Current ACLs for resource `ResourcePattern(resourceType=GROUP, name=*, patternType=LITERAL)`:
+2024-04-01 01:21:55  (principal=User:user_reader, host=*, operation=READ, permissionType=ALLOW)
+2024-04-01 01:21:55
+2024-04-01 01:21:56 topic0
+2024-04-01 01:21:57 topic0
+2024-04-01 01:21:58 topic0
+2024-04-01 01:21:59
+2024-04-01 01:21:48 + kafka-storage random-uuid
+2024-04-01 01:21:49 + kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic topic0 --replication-factor 1 --partitions 1 --command-config /user_admin.properties
+2024-04-01 01:21:50 [2024-03-31 18:21:50,129] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (kafka/192.168.80.2:9092) could not be established. Broker may not be available. (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:21:50 [2024-03-31 18:21:50,234] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (kafka/192.168.80.2:9092) could not be established. Broker may not be available. (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:21:50 [2024-03-31 18:21:50,435] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (kafka/192.168.80.2:9092) could not be established. Broker may not be available. (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:21:50 [2024-03-31 18:21:50,737] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (kafka/192.168.80.2:9092) could not be established. Broker may not be available. (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:21:51 [2024-03-31 18:21:51,139] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (kafka/192.168.80.2:9092) could not be established. Broker may not be available. (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:21:51 [2024-03-31 18:21:51,842] WARN [AdminClient clientId=adminclient-1] Connection to node -1 (kafka/192.168.80.2:9092) could not be established. Broker may not be available. (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:21:53 + kafka-acls --bootstrap-server kafka:9092 --add --allow-principal User:user_writer --operation Write --topic topic0 --command-config /user_admin.properties
+2024-04-01 01:21:54 + kafka-acls --bootstrap-server kafka:9092 --add --allow-principal User:user_reader --operation Read --topic topic0 --group '*' --command-config /user_admin.properties
+2024-04-01 01:21:55 + kafka-topics --bootstrap-server kafka:9092 --list --command-config /user_admin.properties
+2024-04-01 01:21:56 + kafka-topics --bootstrap-server kafka:9092 --list --command-config /user_writer.properties
+2024-04-01 01:21:57 + kafka-topics --bootstrap-server kafka:9092 --list --command-config /user_reader.properties
+2024-04-01 01:21:58 + kafka-topics --bootstrap-server kafka:9092 --list --command-config /user_guest.properties
+2024-04-01 01:21:59 + kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 --producer.config /user_admin.properties
+2024-04-01 01:22:00 + kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 --producer.config /user_writer.properties
+2024-04-01 01:22:01 + kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 --producer.config /user_reader.properties
+2024-04-01 01:22:02 org.apache.kafka.common.KafkaException: Cannot execute transactional method because we are in an error state
+2024-04-01 01:22:02 at org.apache.kafka.clients.producer.internals.TransactionManager.maybeFailWithError(TransactionManager.java:1010)
+2024-04-01 01:22:02 at org.apache.kafka.clients.producer.internals.TransactionManager.maybeAddPartition(TransactionManager.java:328)
+2024-04-01 01:22:02 at org.apache.kafka.clients.producer.KafkaProducer.doSend(KafkaProducer.java:1061)
+2024-04-01 01:22:02 at org.apache.kafka.clients.producer.KafkaProducer.send(KafkaProducer.java:962)
+2024-04-01 01:22:02 at kafka.tools.ConsoleProducer$.send(ConsoleProducer.scala:70)
+2024-04-01 01:22:02 at kafka.tools.ConsoleProducer$.main(ConsoleProducer.scala:52)
+2024-04-01 01:22:02 at kafka.tools.ConsoleProducer.main(ConsoleProducer.scala)
+2024-04-01 01:22:02 Caused by: org.apache.kafka.common.errors.ClusterAuthorizationException: Cluster authorization failed.
+2024-04-01 01:22:02 [2024-03-31 18:22:02,604] ERROR [Producer clientId=console-producer] Aborting producer batches due to fatal error (org.apache.kafka.clients.producer.internals.Sender)
+2024-04-01 01:22:02 org.apache.kafka.common.errors.ClusterAuthorizationException: Cluster authorization failed.
+2024-04-01 01:22:02 [2024-03-31 18:22:02,605] ERROR Error when sending message to topic topic0 with key: null, value: 11 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
+2024-04-01 01:22:02 org.apache.kafka.common.errors.ClusterAuthorizationException: Cluster authorization failed.
+2024-04-01 01:22:03 + kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 --producer.config /user_guest.properties
+2024-04-01 01:22:03 [2024-03-31 18:22:03,675] WARN [Producer clientId=console-producer] Error while fetching metadata with correlation id 1 : {topic0=TOPIC_AUTHORIZATION_FAILED} (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:22:03 [2024-03-31 18:22:03,676] ERROR [Producer clientId=console-producer] Topic authorization failed for topics [topic0] (org.apache.kafka.clients.Metadata)
+2024-04-01 01:22:03 [2024-03-31 18:22:03,678] ERROR Error when sending message to topic topic0 with key: null, value: 11 bytes with error: (org.apache.kafka.clients.producer.internals.ErrorLoggingCallback)
+2024-04-01 01:22:03 org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [topic0]
+2024-04-01 01:22:04 + kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_admin.properties
+2024-04-01 01:22:08 hello world
+2024-04-01 01:22:08 hello world
+2024-04-01 01:22:08 Processed a total of 2 messages
+2024-04-01 01:22:09 + kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_writer.properties
+2024-04-01 01:22:09 [2024-03-31 18:22:09,746] ERROR Error processing message, terminating consumer process:  (kafka.tools.ConsoleConsumer$)
+2024-04-01 01:22:09 org.apache.kafka.common.errors.GroupAuthorizationException: Not authorized to access group: console-consumer-19174
+2024-04-01 01:22:09 Processed a total of 0 messages
+2024-04-01 01:22:10 + kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_reader.properties
+2024-04-01 01:22:13 hello world
+2024-04-01 01:22:13 hello world
+2024-04-01 01:22:13 Processed a total of 2 messages
+2024-04-01 01:22:14 + kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_guest.properties
+2024-04-01 01:22:14 [2024-03-31 18:22:14,798] WARN [Consumer clientId=console-consumer, groupId=console-consumer-88693] Error while fetching metadata with correlation id 2 : {topic0=TOPIC_AUTHORIZATION_FAILED} (org.apache.kafka.clients.NetworkClient)
+2024-04-01 01:22:14 [2024-03-31 18:22:14,799] ERROR [Consumer clientId=console-consumer, groupId=console-consumer-88693] Topic authorization failed for topics [topic0] (org.apache.kafka.clients.Metadata)
+2024-04-01 01:22:14 [2024-03-31 18:22:14,800] ERROR Error processing message, terminating consumer process:  (kafka.tools.ConsoleConsumer$)
+2024-04-01 01:22:14 org.apache.kafka.common.errors.TopicAuthorizationException: Not authorized to access topics: [topic0]
+2024-04-01 01:22:14 Processed a total of 0 messages
