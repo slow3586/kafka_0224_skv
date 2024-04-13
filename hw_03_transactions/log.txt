@@ -1,0 +1,24 @@
+2024-04-19 10:36:56 SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-04-19 10:36:56 SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-04-19 10:36:56 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-04-19 10:36:56 Creating topic!
+2024-04-19 10:37:00 Topic created!
+2024-04-19 10:37:00 Starting consumer!
+2024-04-19 10:37:00 Consumer subscribed!
+2024-04-19 10:37:02 Starting producer
+2024-04-19 10:37:02 Initializing transactions!
+2024-04-19 10:37:04 Starting transactions!
+2024-04-19 10:37:04 Transaction #1 started!
+2024-04-19 10:37:04 Consumer received: Key1:Topic1, Transaction #1 (Committed): 0
+2024-04-19 10:37:04 Consumer received: Key1:Topic1, Transaction #1 (Committed): 1
+2024-04-19 10:37:04 Consumer received: Key1:Topic1, Transaction #1 (Committed): 2
+2024-04-19 10:37:04 Consumer received: Key1:Topic1, Transaction #1 (Committed): 3
+2024-04-19 10:37:04 Consumer received: Key1:Topic1, Transaction #1 (Committed): 4
+2024-04-19 10:37:04 Consumer received: Key0:Topic0, Transaction #1 (Committed): 0
+2024-04-19 10:37:04 Consumer received: Key0:Topic0, Transaction #1 (Committed): 1
+2024-04-19 10:37:04 Consumer received: Key0:Topic0, Transaction #1 (Committed): 2
+2024-04-19 10:37:04 Consumer received: Key0:Topic0, Transaction #1 (Committed): 3
+2024-04-19 10:37:04 Consumer received: Key0:Topic0, Transaction #1 (Committed): 4
+2024-04-19 10:37:04 Transaction #1 committed!
+2024-04-19 10:37:04 Transaction #2 started!
+2024-04-19 10:37:04 Transaction #2 aborted!
