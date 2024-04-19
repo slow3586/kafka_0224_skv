@@ -1,0 +1,66 @@
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    environment:
+      KAFKA_OPTS: '-Djava.security.auth.login.config=/kafka_server_jaas.conf'
+
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      KAFKA_SECURITY_PROTOCOL: SASL_PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: BROKER:SASL_PLAINTEXT, CONTROLLER:SASL_PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: BROKER://kafka:9092
+      KAFKA_LISTENERS: BROKER://kafka:9092, CONTROLLER://kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
+
+      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      KAFKA_SASL_MECHANISM_CONTROLLER_PROTOCOL: PLAIN
+
+      KAFKA_AUTHORIZER_CLASS_NAME: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
+      KAFKA_SUPER_USERS: "User:user_admin"
+    volumes:
+      - ./kafka_server_jaas.conf:/kafka_server_jaas.conf
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - kafka
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: |
+      "
+      set -x
+      
+      kafka-storage random-uuid
+      
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic topic0 --replication-factor 1 --partitions 1 --command-config /user_admin.properties
+
+      kafka-acls --bootstrap-server kafka:9092 --add --allow-principal User:user_writer --operation Write --topic topic0 --command-config /user_admin.properties
+      kafka-acls --bootstrap-server kafka:9092 --add --allow-principal User:user_reader --operation Read --topic topic0 --group '*' --command-config /user_admin.properties
+
+      kafka-topics --bootstrap-server kafka:9092 --list  --command-config /user_admin.properties
+      kafka-topics --bootstrap-server kafka:9092 --list  --command-config /user_writer.properties
+      kafka-topics --bootstrap-server kafka:9092 --list  --command-config /user_reader.properties
+      kafka-topics --bootstrap-server kafka:9092 --list  --command-config /user_guest.properties
+      
+      kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 <<< 'hello world' --producer.config /user_admin.properties
+      kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 <<< 'hello world' --producer.config /user_writer.properties
+      kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 <<< 'hello world' --producer.config /user_reader.properties
+      kafka-console-producer --bootstrap-server kafka:9092 --topic topic0 <<< 'hello world' --producer.config /user_guest.properties
+      
+      kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_admin.properties
+      kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_writer.properties
+      kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_reader.properties
+      kafka-console-consumer --bootstrap-server kafka:9092 --topic topic0 --from-beginning --max-messages 2 --consumer.config /user_guest.properties
+      "
+    volumes:
+      - ./user_admin.properties:/user_admin.properties
+      - ./user_reader.properties:/user_reader.properties
+      - ./user_writer.properties:/user_writer.properties
+      - ./user_guest.properties:/user_guest.properties
