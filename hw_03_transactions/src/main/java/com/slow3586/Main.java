@@ -8,11 +8,13 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.IsolationLevel;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,7 +51,8 @@ public class Main {
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, PORT0,
                 ConsumerConfig.GROUP_ID_CONFIG, "GROUP_ID",
                 ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
+                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
+                ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString().toLowerCase(Locale.ROOT)
             ))
         ) {
             consumer.subscribe(List.of(TOPIC0, TOPIC1));
@@ -94,8 +97,11 @@ public class Main {
                 producer.send(new ProducerRecord<>(TOPIC0, "Key0", TOPIC0 + ", Transaction #2 (Aborted): " + i));
                 producer.send(new ProducerRecord<>(TOPIC1, "Key1", TOPIC1 + ", Transaction #2 (Aborted): " + i));
             });
+            producer.flush();
+            System.out.println("Transaction #2 flushed!");
 
             producer.abortTransaction();
+            producer.flush();
             System.out.println("Transaction #2 aborted!");
         }
     }
