@@ -1,0 +1,35 @@
+2024-05-04 00:48:05 [info] [launcher] getting org.scala-sbt sbt 1.9.9  (this may take some time)...
+2024-05-04 00:48:13 [info] [launcher] getting Scala 2.12.18 (for sbt)...
+2024-05-04 00:48:36 SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+2024-05-04 00:48:36 SLF4J: Defaulting to no-operation (NOP) logger implementation
+2024-05-04 00:48:36 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+2024-05-04 00:48:14 [info] welcome to sbt 1.9.9 (Eclipse Adoptium Java 17.0.2)
+2024-05-04 00:48:15 [info] loading project definition from /usr/app/project
+2024-05-04 00:48:18 [info] loading settings for project root from build.sbt ...
+2024-05-04 00:48:19 [info] set current project to hw_04_akka_streams (in build file:/usr/app/)
+2024-05-04 00:48:32 [info] compiling 1 Scala source to /usr/app/target/scala-2.13/classes ...
+2024-05-04 00:48:35 [warn] 2 deprecations (since 2.13.3); re-run with -deprecation for details
+2024-05-04 00:48:35 [warn] one warning found
+2024-05-04 00:48:35 [info] done compiling
+2024-05-04 00:48:35 [info] running Main
+2024-05-04 00:48:36 Creating topic!
+2024-05-04 00:48:36 Topic created!
+2024-05-04 00:48:37 Starting consumer!
+2024-05-04 00:48:37 [INFO] [05/03/2024 17:48:37.673] [default-akka.actor.default-dispatcher-4] [SingleSourceLogic(akka://default)] [cf4b4] Starting. StageActor Actor[akka://default/system/Materializers/StreamSupervisor-0/$$a#1537305299]
+2024-05-04 00:48:38 Running producer!
+2024-05-04 00:48:39 15
+2024-05-04 00:48:39 30
+2024-05-04 00:48:39 45
+2024-05-04 00:48:39 60
+2024-05-04 00:48:39 75
+2024-05-04 00:48:39 90
+2024-05-04 00:48:39 105
+2024-05-04 00:48:39 120
+2024-05-04 00:48:39 135
+2024-05-04 00:48:39 150
+2024-05-04 00:48:39 165
+2024-05-04 00:48:39 180
+2024-05-04 00:48:39 195
+2024-05-04 00:48:39 210
+2024-05-04 00:48:39 225
+2024-05-04 00:50:38 [success] Total time: 139 s (02:19), completed May 3, 2024, 5:50:38 PM
