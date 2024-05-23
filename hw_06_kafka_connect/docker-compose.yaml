@@ -1,0 +1,158 @@
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.4
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka1:
+    image: confluentinc/cp-kafka:7.4.4
+    ports:
+      - "9091:9091"
+      - "9191:9191"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9191,PLAINTEXT_HOST://kafka1:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    depends_on:
+      - zookeeper
+
+  kafka2:
+    image: confluentinc/cp-kafka:7.4.4
+    ports:
+      - "9092:9091"
+      - "9192:9191"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9191,PLAINTEXT_HOST://kafka2:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    depends_on:
+      - zookeeper
+
+  kafka3:
+    image: confluentinc/cp-kafka:7.4.4
+    ports:
+      - "9093:9091"
+      - "9193:9191"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9191,PLAINTEXT_HOST://kafka3:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    depends_on:
+      - zookeeper
+
+  connect:
+    image: confluentinc/cp-kafka-connect:latest
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "kafka1:9091,kafka2:9091,kafka3:9091"
+      CONNECT_REST_PORT: "8083"
+      CONNECT_GROUP_ID: "local-connect"
+      CONNECT_CONFIG_STORAGE_TOPIC: "local-connect-config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "local-connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "local-connect-status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "localhost"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+      CONNECT_PLUGIN_PATH: /usr/share/java/,/etc/kafka-connect/jars
+    volumes:
+      - ./connect:/etc/kafka-connect/jars
+    healthcheck:
+      test: "curl --fail --silent localhost:8083/ | grep version || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:14-alpine
+    user: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGPORT: 5432
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+    command: >
+      postgres 
+      -c ssl=off
+      -c wal_level=logical
+
+  connect-setup:
+    image: curlimages/curl
+    depends_on:
+      connect:
+        condition: service_healthy
+    volumes:
+      - ./products.json:/opt/products.json
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: |
+      "
+      set -x
+      sleep 5
+      curl --connect-timeout 5 --max-time 10 --retry 5 --retry-delay 0 --retry-max-time 40 -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://connect:8083/connectors/ -d @/opt/products.json
+      "          
+
+  postgres-insert:
+    image: postgres:14-alpine
+    entrypoint: [ "/bin/sh", "-c" ]
+    depends_on:
+      connect-setup:
+        condition: service_completed_successfully
+    command: |
+      "
+      set -x
+      
+      export PGPASSWORD=postgres
+      psql -h postgres -p 5432 -U postgres postgres << 'endmsg'
+      insert into products(name, count) values ('name1', 1);
+      insert into products(name, count) values ('name2', 2);
+      insert into products(name, count) values ('name3', 3);
+      update products set count=100 where name='name1';
+      endmsg
+      "
+
+  kafka-consumer:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      postgres-insert:
+        condition: service_completed_successfully
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: |
+      "
+      set -x
+      sleep 5
+      kafka-console-consumer --bootstrap-server kafka1:9091 --topic postgres.public.products --from-beginning
+      "
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka1:9091"
+    depends_on:
+      - kafka1
