@@ -1,0 +1,4 @@
+app:
+  producer: "localhost:9091"
+  consumer: "localhost:9092"
+  topic: "events"
